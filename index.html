@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        table {
+            width: 50%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>MS Center for Advanced Studies</h1> <!-- Added College Name -->
+    <h2>Student Attendance System</h2>
+    <p><strong>Date:</strong> <span id="currentDate"></span></p>
+    <p><strong>Time:</strong> <span id="currentTime"></span></p>
+    <p><strong>Course:</strong> Degree</p>
+    <p><strong>Section:</strong> BCA</p>
+    <p><strong>Total Students:</strong> <span id="totalStudents">0</span></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Attendance</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTable">
+            <tr><td>Syed</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Pavan K V</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Abhi ray</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Krishna</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Sharan</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Madhu</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Durga</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Ritesh</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Ashish</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Arun</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Naven</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Pavan G</td><td><input type="checkbox" class="attendance"></td></tr>
+            <tr><td>Marco</td><td><input type="checkbox" class="attendance"></td></tr>
+        </tbody>
+    </table>
+    <h3>Present Students: <span id="presentCount">0</span></h3>
+    <h3>Absent Students: <span id="absentCount">0</span></h3>
+    
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').innerText = now.toLocaleDateString();
+            document.getElementById('currentTime').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        function saveAttendance() {
+            let attendanceData = [];
+            let presentCount = 0;
+            let absentCount = 0;
+            let totalStudents = document.querySelectorAll('#attendanceTable tr').length;
+            
+            document.querySelectorAll('#attendanceTable tr').forEach(row => {
+                let name = row.cells[0].innerText;
+                let isChecked = row.cells[1].querySelector('input').checked;
+                attendanceData.push({ name, attended: isChecked });
+                if (isChecked) presentCount++;
+            });
+            
+            absentCount = totalStudents - presentCount;
+            localStorage.setItem('attendance', JSON.stringify(attendanceData));
+            document.getElementById('presentCount').innerText = presentCount;
+            document.getElementById('absentCount').innerText = absentCount;
+            document.getElementById('totalStudents').innerText = totalStudents;
+        }
+
+        document.querySelectorAll('.attendance').forEach(input => {
+            input.addEventListener('change', saveAttendance);
+        });
+
+        function loadAttendance() {
+            let storedData = JSON.parse(localStorage.getItem('attendance')) || [];
+            let presentCount = 0;
+            let absentCount = 0;
+            let totalStudents = document.querySelectorAll('#attendanceTable tr').length;
+            
+            storedData.forEach((data, index) => {
+                let row = document.querySelectorAll('#attendanceTable tr')[index];
+                if (row) {
+                    row.cells[1].querySelector('input').checked = data.attended;
+                    if (data.attended) presentCount++;
+                }
+            });
+            
+            absentCount = totalStudents - presentCount;
+            document.getElementById('presentCount').innerText = presentCount;
+            document.getElementById('absentCount').innerText = absentCount;
+            document.getElementById('totalStudents').innerText = totalStudents;
+        }
+
+        window.onload = loadAttendance;
+    </script>
+</body>
+</html>
